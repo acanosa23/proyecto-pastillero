@@ -6,24 +6,22 @@ const supabase = createClient(
 );
 
 export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const code = searchParams.get('code');
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code');
 
   let tagId = null;
-  let pegatina = 'Registro manual';
 
   if (code) {
     const { data: tag, error: tagError } = await supabase
       .from('tags')
-      .select('id, name')
+      .select('id')
       .eq('code', code)
       .single();
 
     if (tagError || !tag) {
-      return Response.json({ error: 'Pegatina no reconocida' }, { status: 404 });
+      return Response.redirect(`${url.origin}/?error=tag`, 302);
     }
     tagId = tag.id;
-    pegatina = tag.name;
   }
 
   const ahora = new Date();
@@ -34,10 +32,10 @@ export async function GET(request) {
     .insert({ tag_id: tagId, period, source: code ? 'nfc' : 'manual' });
 
   if (insertError) {
-    return Response.json({ error: 'No se pudo guardar la toma' }, { status: 500 });
+    return Response.redirect(`${url.origin}/?error=guardar`, 302);
   }
 
-  return Response.json({ ok: true, pegatina, period });
+  return Response.redirect(`${url.origin}/?registrado=1`, 302);
 }
 
 function calcularPeriodo(fecha) {
@@ -51,9 +49,7 @@ function calcularPeriodo(fecha) {
   const hora = parseInt(partes.find((p) => p.type === 'hour').value, 10);
   const minuto = parseInt(partes.find((p) => p.type === 'minute').value, 10);
   const minutosDelDia = hora * 60 + minuto;
-
   const inicioManana = 5 * 60;
   const finManana = 14 * 60;
-
   return minutosDelDia >= inicioManana && minutosDelDia <= finManana ? 'mañana' : 'noche';
 }

@@ -1,9 +1,9 @@
-import { Quicksand } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 
-const quicksand = Quicksand({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["500", "600", "700", "800"],
 });
 
 export const metadata = {
@@ -14,7 +14,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
-      <body className={`${quicksand.className} antialiased`}>{children}</body>
+      <body className={`${playfair.className} antialiased`}>{children}</body>
     </html>
   );
 }
