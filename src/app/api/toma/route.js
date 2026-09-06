@@ -9,14 +9,21 @@ export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const code = searchParams.get('code');
 
-  const { data: tag, error: tagError } = await supabase
-    .from('tags')
-    .select('id, name')
-    .eq('code', code)
-    .single();
+  let tagId = null;
+  let pegatina = 'Registro manual';
 
-  if (tagError || !tag) {
-    return Response.json({ error: 'Pegatina no reconocida' }, { status: 404 });
+  if (code) {
+    const { data: tag, error: tagError } = await supabase
+      .from('tags')
+      .select('id, name')
+      .eq('code', code)
+      .single();
+
+    if (tagError || !tag) {
+      return Response.json({ error: 'Pegatina no reconocida' }, { status: 404 });
+    }
+    tagId = tag.id;
+    pegatina = tag.name;
   }
 
   const ahora = new Date();
@@ -24,13 +31,13 @@ export async function GET(request) {
 
   const { error: insertError } = await supabase
     .from('tomas')
-    .insert({ tag_id: tag.id, period, source: 'nfc' });
+    .insert({ tag_id: tagId, period, source: code ? 'nfc' : 'manual' });
 
   if (insertError) {
     return Response.json({ error: 'No se pudo guardar la toma' }, { status: 500 });
   }
 
-  return Response.json({ ok: true, pegatina: tag.name, period });
+  return Response.json({ ok: true, pegatina, period });
 }
 
 function calcularPeriodo(fecha) {

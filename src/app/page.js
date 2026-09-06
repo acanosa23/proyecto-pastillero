@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import BotonManual from './BotonManual';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,6 +30,7 @@ export default async function Home() {
       <h1>Pastillas de hoy</h1>
       <p>Mañana: {manana ? '✅ tomada' : '⬜ pendiente'}</p>
       <p>Noche: {noche ? '✅ tomada' : '⬜ pendiente'}</p>
+      <BotonManual />
     </main>
   );
 }
