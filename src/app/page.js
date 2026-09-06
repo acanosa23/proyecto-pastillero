@@ -45,10 +45,50 @@ function nombreDia(fechaStr) {
   }).format(fecha);
 }
 
-function TarjetaEstado({ titulo, toma, emoji }) {
+function construirDia(fecha, tomas) {
+  const delDia = tomas.filter((t) => fechaMadrid(new Date(t.taken_at)) === fecha);
+
+  const mananas = delDia
+    .filter((t) => t.period === 'mañana')
+    .sort((a, b) => new Date(a.taken_at) - new Date(b.taken_at));
+  const noches = delDia
+    .filter((t) => t.period === 'noche')
+    .sort((a, b) => new Date(a.taken_at) - new Date(b.taken_at));
+
+  return {
+    fecha,
+    manana: mananas[0] || null,
+    mananaExtra: mananas.length > 1,
+    noche: noches[0] || null,
+    nocheExtra: noches.length > 1,
+  };
+}
+
+function calcularRacha(dias) {
+  let lista = dias;
+  if (!(lista[0].manana && lista[0].noche)) {
+    lista = lista.slice(1);
+  }
+  let racha = 0;
+  for (const dia of lista) {
+    if (dia.manana && dia.noche) {
+      racha++;
+    } else {
+      break;
+    }
+  }
+  return racha;
+}
+
+function origenTexto(toma) {
+  if (!toma) return '';
+  return toma.tags?.name ? toma.tags.name : 'Registrado a mano';
+}
+
+function TarjetaEstado({ titulo, toma, extra, emoji }) {
   return (
     <div
-      className={`rounded-2xl p-6 w-40 text-center shadow-md border-2 ${
+      className={`rounded-2xl p-6 w-44 text-center shadow-md border-2 ${
         toma ? 'bg-green-100 border-green-400' : 'bg-gray-100 border-gray-300'
       }`}
     >
@@ -56,7 +96,11 @@ function TarjetaEstado({ titulo, toma, emoji }) {
       <div className="font-semibold text-slate-700">{titulo}</div>
       <div className="text-2xl mt-2">{toma ? '✅' : '⬜'}</div>
       {toma && (
-        <div className="text-xs text-slate-500 mt-1">{horaMadrid(new Date(toma.taken_at))}</div>
+        <>
+          <div className="text-xs text-slate-500 mt-1">{horaMadrid(new Date(toma.taken_at))}</div>
+          <div className="text-xs text-slate-400">{origenTexto(toma)}</div>
+          {extra && <div className="text-xs text-amber-600 mt-1">Registrado más de una vez</div>}
+        </>
       )}
     </div>
   );
@@ -75,22 +119,17 @@ function FilaHistorial({ fecha, manana, noche }) {
 }
 
 export default async function Home() {
-  const { data: tomas } = await supabase
+  const { data: tomasCrudas } = await supabase
     .from('tomas')
-    .select('period, taken_at')
+    .select('period, taken_at, source, tags(name)')
     .order('taken_at', { ascending: false })
-    .limit(30);
+    .limit(60);
 
-  const dias = ultimosDias(7);
-  const historial = dias.map((fecha) => {
-    const delDia = (tomas || []).filter((t) => fechaMadrid(new Date(t.taken_at)) === fecha);
-    return {
-      fecha,
-      manana: delDia.find((t) => t.period === 'mañana'),
-      noche: delDia.find((t) => t.period === 'noche'),
-    };
-  });
+  const tomas = tomasCrudas || [];
 
+  const dias30 = ultimosDias(30).map((fecha) => construirDia(fecha, tomas));
+  const racha = calcularRacha(dias30);
+  const historial = dias30.slice(0, 7);
   const hoy = historial[0];
 
   return (
@@ -99,9 +138,15 @@ export default async function Home() {
         ¿Me he empastillado hoy?
       </h1>
 
+      {racha > 0 && (
+        <div className="text-lg font-semibold text-orange-500">
+          🔥 {racha} {racha === 1 ? 'día seguido' : 'días seguidos'} sin fallar ninguna toma
+        </div>
+      )}
+
       <div className="flex gap-4 flex-wrap justify-center">
-        <TarjetaEstado titulo="Café pastillero" toma={hoy.manana} emoji="🌅" />
-        <TarjetaEstado titulo="Yogur con pastillas" toma={hoy.noche} emoji="🌙" />
+        <TarjetaEstado titulo="Café pastillero" toma={hoy.manana} extra={hoy.mananaExtra} emoji="🌅" />
+        <TarjetaEstado titulo="Yogur con pastillas" toma={hoy.noche} extra={hoy.nocheExtra} emoji="🌙" />
       </div>
 
       <BotonManual />
