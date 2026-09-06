@@ -15,8 +15,12 @@ export default function BotonManual() {
   }
 
   return (
-    <button onClick={registrar} disabled={cargando}>
-      {cargando ? 'Registrando...' : 'Registrar toma manualmente'}
+    <button
+      onClick={registrar}
+      disabled={cargando}
+      className="mt-4 rounded-full bg-sky-500 px-6 py-3 text-white font-semibold shadow hover:bg-sky-600 disabled:opacity-50 transition"
+    >
+      {cargando ? 'Registrando...' : '💊 Registrar toma manualmente'}
     </button>
   );
 }
