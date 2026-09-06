@@ -18,9 +18,11 @@ export default function BotonManual() {
     <button
       onClick={registrar}
       disabled={cargando}
-      className="mt-4 rounded-full bg-sky-500 px-6 py-3 text-white font-semibold shadow hover:bg-sky-600 disabled:opacity-50 transition"
+      className="mt-2 max-w-xs rounded-2xl bg-sky-500 px-6 py-3 text-white font-semibold shadow hover:bg-sky-600 disabled:opacity-50 transition text-sm text-center"
     >
-      {cargando ? 'Registrando...' : '💊 Registrar toma manualmente'}
+      {cargando
+        ? 'Registrando...'
+        : 'Me he tomado la pastilla, pero no me da la gana de hacer caso a mi hijo Álvaro'}
     </button>
   );
 }
