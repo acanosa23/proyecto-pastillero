@@ -18,7 +18,7 @@ export default function BotonManual() {
     <button
       onClick={registrar}
       disabled={cargando}
-      className="mt-2 max-w-xs rounded-2xl bg-sky-500 px-6 py-3 text-white font-semibold shadow hover:bg-sky-600 disabled:opacity-50 transition text-sm text-center"
+      className="mt-2 max-w-xs rounded-3xl bg-gradient-to-r from-sky-400 to-blue-500 px-6 py-4 text-white font-semibold shadow-lg hover:shadow-xl active:scale-95 transition disabled:opacity-50 text-sm text-center"
     >
       {cargando
         ? 'Registrando...'

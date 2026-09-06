@@ -88,16 +88,18 @@ function origenTexto(toma) {
 function TarjetaEstado({ titulo, toma, extra, emoji }) {
   return (
     <div
-      className={`rounded-2xl p-6 w-44 text-center shadow-md border-2 ${
-        toma ? 'bg-green-100 border-green-400' : 'bg-gray-100 border-gray-300'
+      className={`rounded-3xl p-6 w-44 text-center shadow-lg border-2 transition-transform active:scale-95 ${
+        toma
+          ? 'bg-gradient-to-b from-green-100 to-emerald-50 border-emerald-300'
+          : 'bg-white border-slate-200'
       }`}
     >
-      <div className="text-4xl mb-2">{emoji}</div>
+      <div className="text-5xl mb-2">{emoji}</div>
       <div className="font-semibold text-slate-700">{titulo}</div>
-      <div className="text-2xl mt-2">{toma ? '✅' : '⬜'}</div>
+      <div className="text-3xl mt-2">{toma ? '✅' : '⬜'}</div>
       {toma && (
         <>
-          <div className="text-xs text-slate-500 mt-1">{horaMadrid(new Date(toma.taken_at))}</div>
+          <div className="text-xs text-slate-500 mt-2">{horaMadrid(new Date(toma.taken_at))}</div>
           <div className="text-xs text-slate-400">{origenTexto(toma)}</div>
           {extra && <div className="text-xs text-amber-600 mt-1">Registrado más de una vez</div>}
         </>
@@ -108,8 +110,8 @@ function TarjetaEstado({ titulo, toma, extra, emoji }) {
 
 function FilaHistorial({ fecha, manana, noche }) {
   return (
-    <div className="flex items-center justify-between w-full max-w-sm bg-white/70 rounded-xl px-4 py-2 shadow-sm">
-      <span className="text-sm text-slate-600 capitalize">{nombreDia(fecha)}</span>
+    <div className="flex items-center justify-between w-full max-w-sm bg-white rounded-2xl px-4 py-3 shadow-sm">
+      <span className="text-sm font-medium text-slate-600 capitalize">{nombreDia(fecha)}</span>
       <div className="flex gap-3 text-xl">
         <span>{manana ? '🌅✅' : '🌅⬜'}</span>
         <span>{noche ? '🌙✅' : '🌙⬜'}</span>
@@ -133,14 +135,14 @@ export default async function Home() {
   const hoy = historial[0];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-50 to-white flex flex-col items-center gap-6 p-6">
-      <h1 className="text-3xl font-bold text-slate-700 text-center mt-4">
-        ¿Me he empastillado hoy?
+    <main className="min-h-screen bg-gradient-to-br from-amber-50 via-rose-50 to-sky-100 flex flex-col items-center gap-6 p-6">
+      <h1 className="text-4xl font-bold text-slate-700 text-center mt-6">
+        ¿Me he empastillado hoy? 💊
       </h1>
 
       {racha > 0 && (
-        <div className="text-lg font-semibold text-orange-500">
-          🔥 {racha} {racha === 1 ? 'día seguido' : 'días seguidos'} sin fallar ninguna toma
+        <div className="bg-gradient-to-r from-orange-400 to-amber-400 text-white font-semibold px-5 py-2 rounded-full shadow">
+          🔥 {racha} {racha === 1 ? 'día seguido' : 'días seguidos'} sin fallar
         </div>
       )}
 
@@ -151,7 +153,7 @@ export default async function Home() {
 
       <BotonManual />
 
-      <div className="w-full flex flex-col items-center gap-2 mt-6">
+      <div className="w-full flex flex-col items-center gap-2 mt-6 max-w-sm">
         <h2 className="text-lg font-semibold text-slate-600">Últimos 7 días</h2>
         {historial.map((dia) => (
           <FilaHistorial key={dia.fecha} {...dia} />
