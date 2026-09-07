@@ -22,7 +22,7 @@ export default function BotonManual() {
 
   if (confirmado) {
     return (
-      <div className="mt-2 max-w-xs rounded-2xl bg-green-600 text-white font-bold px-6 py-4 text-center">
+      <div className="mt-2 max-w-xs bg-green-600 text-white font-bold px-6 py-4 text-center">
         ¡Estoy empastillada!
       </div>
     );
@@ -32,7 +32,7 @@ export default function BotonManual() {
     <button
       onClick={registrar}
       disabled={cargando}
-      className={`${orbitron.className} mt-2 max-w-xs rounded-2xl bg-yellow-400 px-6 py-4 text-black text-xs shadow-lg hover:bg-yellow-300 active:scale-95 transition disabled:opacity-50 text-center`}
+      className={`${orbitron.className} mt-2 max-w-xs bg-yellow-400 px-6 py-4 text-black text-xs shadow-lg hover:bg-yellow-300 active:scale-95 transition disabled:opacity-50 text-center`}
     >
       {cargando
         ? 'REGISTRANDO...'

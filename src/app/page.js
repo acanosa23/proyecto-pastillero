@@ -82,7 +82,7 @@ function TarjetaEstado({ titulo, toma, extra, Icono }) {
   const hecha = !!toma;
   return (
     <div
-      className={`rounded-2xl p-6 w-44 text-center border-2 ${
+      className={`p-6 w-44 text-center border-2 ${
         hecha ? 'bg-green-600 border-green-700 text-white' : 'bg-stone-100 border-stone-200 text-black'
       }`}
     >
@@ -104,7 +104,7 @@ function TarjetaEstado({ titulo, toma, extra, Icono }) {
 
 function FilaHistorial({ fecha, manana, noche }) {
   const completo = !!(manana && noche);
-  const base = 'flex-1 flex items-center justify-center py-3 rounded-lg';
+  const base = 'flex-1 flex items-center justify-center py-3';
   return (
     <div className="flex gap-1 w-full max-w-sm">
       <div className={`${base} font-semibold capitalize text-sm ${completo ? 'bg-green-600 text-white' : 'bg-stone-100 text-black'}`}>
@@ -142,13 +142,13 @@ export default async function Home({ searchParams }) {
       <h1 className="text-5xl sm:text-6xl font-bold text-center mt-6">¿Me he empastillado hoy?</h1>
 
       {registrado && (
-        <div className="flex items-center gap-2 bg-green-600 text-white font-bold px-6 py-3 rounded-full">
+        <div className="flex items-center gap-2 bg-green-600 text-white font-bold px-6 py-3">
           <Check size={20} />
           ¡Estoy empastillada!
         </div>
       )}
       {error && (
-        <div className="bg-red-100 text-red-700 px-6 py-3 rounded-full font-semibold">
+        <div className="bg-red-100 text-red-700 px-6 py-3 font-semibold">
           Algo no ha ido bien — avisa a Álvaro
         </div>
       )}
