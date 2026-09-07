@@ -5,14 +5,8 @@ export default function manifest() {
     description: 'Recordatorio de pastillas de mañana y noche',
     start_url: '/',
     display: 'standalone',
-    background_color: '#f0f9ff',
-    theme_color: '#0ea5e9',
-    icons: [
-      {
-        src: '/icon.svg',
-        sizes: 'any',
-        type: 'image/svg+xml',
-      },
-    ],
+    background_color: '#E7DDC6',
+    theme_color: '#0E3529',
+    icons: [{ src: '/icon.svg', sizes: 'any', type: 'image/svg+xml' }],
   };
 }

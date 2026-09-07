@@ -1,4 +1,5 @@
 import { createClient } from '@supabase/supabase-js';
+import { calcularPeriodo } from '@/lib/fechas';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -24,8 +25,7 @@ export async function GET(request) {
     tagId = tag.id;
   }
 
-  const ahora = new Date();
-  const period = calcularPeriodo(ahora);
+  const period = calcularPeriodo(new Date());
 
   const { error: insertError } = await supabase
     .from('tomas')
@@ -36,20 +36,4 @@ export async function GET(request) {
   }
 
   return Response.redirect(`${url.origin}/?registrado=1`, 302);
-}
-
-function calcularPeriodo(fecha) {
-  const formatter = new Intl.DateTimeFormat('es-ES', {
-    timeZone: 'Europe/Madrid',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-  });
-  const partes = formatter.formatToParts(fecha);
-  const hora = parseInt(partes.find((p) => p.type === 'hour').value, 10);
-  const minuto = parseInt(partes.find((p) => p.type === 'minute').value, 10);
-  const minutosDelDia = hora * 60 + minuto;
-  const inicioManana = 5 * 60;
-  const finManana = 14 * 60;
-  return minutosDelDia >= inicioManana && minutosDelDia <= finManana ? 'mañana' : 'noche';
 }

@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { Coffee, Moon, Check, Circle, Flame } from 'lucide-react';
 import BotonManual from './BotonManual';
+import { fechaMadrid, horaMadrid, diaDeToma, ultimosDias, nombreDiaCorto, nombreDiaLargo } from '@/lib/fechas';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,39 +10,13 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 );
 
-function fechaMadrid(fecha) {
-  return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Madrid' }).format(fecha);
-}
-
-function horaMadrid(fecha) {
-  return new Intl.DateTimeFormat('es-ES', {
-    timeZone: 'Europe/Madrid',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(fecha);
-}
-
-function ultimosDias(n) {
-  const hoyStr = fechaMadrid(new Date());
-  const [anio, mes, dia] = hoyStr.split('-').map(Number);
-  const base = new Date(Date.UTC(anio, mes - 1, dia));
-  const dias = [];
-  for (let i = 0; i < n; i++) {
-    const f = new Date(base);
-    f.setUTCDate(f.getUTCDate() - i);
-    dias.push(f.toISOString().slice(0, 10));
-  }
-  return dias;
-}
-
-function nombreDia(fechaStr) {
-  const [y, m, d] = fechaStr.split('-').map(Number);
-  const fecha = new Date(Date.UTC(y, m - 1, d));
-  return new Intl.DateTimeFormat('es-ES', { weekday: 'short', timeZone: 'UTC' }).format(fecha);
-}
+const OSCURO = '#0E3529';
+const VERDE = '#4B8A6C';
+const BEIGE = '#E7DDC6';
+const ORO = '#B89B4A';
 
 function construirDia(fecha, tomas) {
-  const delDia = tomas.filter((t) => fechaMadrid(new Date(t.taken_at)) === fecha);
+  const delDia = tomas.filter((t) => diaDeToma(new Date(t.taken_at)) === fecha);
   const mananas = delDia
     .filter((t) => t.period === 'mañana')
     .sort((a, b) => new Date(a.taken_at) - new Date(b.taken_at));
@@ -82,20 +57,28 @@ function TarjetaEstado({ titulo, toma, extra, Icono }) {
   const hecha = !!toma;
   return (
     <div
-      className={`p-6 w-44 text-center border-2 ${
-        hecha ? 'bg-green-600 border-green-700 text-white' : 'bg-stone-100 border-stone-200 text-black'
-      }`}
+      className="p-6 w-44 text-center border-4"
+      style={{
+        backgroundColor: hecha ? VERDE : BEIGE,
+        borderColor: OSCURO,
+        color: hecha ? '#fff' : OSCURO,
+        boxShadow: `4px 4px 0px ${OSCURO}`,
+      }}
     >
       <Icono className="mx-auto mb-2" size={36} />
       <div className="font-semibold">{titulo}</div>
       <div className="mt-2 flex justify-center">
-        {hecha ? <Check size={28} /> : <Circle size={28} className="text-stone-300" />}
+        {hecha ? <Check size={28} /> : <Circle size={28} />}
       </div>
       {hecha && (
         <>
-          <div className="text-xs mt-2 text-green-100">{horaMadrid(new Date(toma.taken_at))}</div>
-          <div className="text-xs text-green-100">{origenTexto(toma)}</div>
-          {extra && <div className="text-xs text-yellow-200 mt-1">Registrado más de una vez</div>}
+          <div className="text-xs mt-2">{horaMadrid(new Date(toma.taken_at))}</div>
+          <div className="text-xs">{origenTexto(toma)}</div>
+          {extra && (
+            <div className="text-xs mt-1" style={{ color: ORO }}>
+              Registrado más de una vez
+            </div>
+          )}
         </>
       )}
     </div>
@@ -104,16 +87,21 @@ function TarjetaEstado({ titulo, toma, extra, Icono }) {
 
 function FilaHistorial({ fecha, manana, noche }) {
   const completo = !!(manana && noche);
-  const base = 'flex-1 flex items-center justify-center py-3';
+  const celda = (activo) => ({
+    backgroundColor: activo ? VERDE : BEIGE,
+    color: activo ? '#fff' : OSCURO,
+    borderColor: OSCURO,
+  });
+  const base = 'flex-1 flex items-center justify-center py-3 border-2';
   return (
-    <div className="flex gap-1 w-full max-w-sm">
-      <div className={`${base} font-semibold capitalize text-sm ${completo ? 'bg-green-600 text-white' : 'bg-stone-100 text-black'}`}>
-        {nombreDia(fecha)}
+    <div className="flex w-full max-w-sm">
+      <div className={`${base} font-semibold text-sm`} style={celda(completo)}>
+        {nombreDiaCorto(fecha)}
       </div>
-      <div className={`${base} ${manana ? 'bg-green-600 text-white' : 'bg-stone-100 text-stone-400'}`}>
+      <div className={base} style={celda(!!manana)}>
         <Coffee size={18} />
       </div>
-      <div className={`${base} ${noche ? 'bg-green-600 text-white' : 'bg-stone-100 text-stone-400'}`}>
+      <div className={base} style={celda(!!noche)}>
         <Moon size={18} />
       </div>
     </div>
@@ -136,27 +124,34 @@ export default async function Home({ searchParams }) {
   const racha = calcularRacha(dias30);
   const historial = dias30.slice(0, 7);
   const hoy = historial[0];
+  const hoyStr = fechaMadrid(new Date());
 
   return (
-    <main className="min-h-screen bg-green-50 text-black flex flex-col items-center gap-6 p-6">
+    <main className="min-h-screen bg-white flex flex-col items-center gap-6 p-6" style={{ color: OSCURO }}>
       <h1 className="text-5xl sm:text-6xl font-bold text-center mt-6">¿Me he empastillado hoy?</h1>
+      <p className="text-lg capitalize -mt-4">{nombreDiaLargo(hoyStr)}</p>
 
       {registrado && (
-        <div className="flex items-center gap-2 bg-green-600 text-white font-bold px-6 py-3">
+        <div
+          className="flex items-center gap-2 font-bold px-6 py-3 border-4"
+          style={{ backgroundColor: VERDE, borderColor: OSCURO, color: '#fff' }}
+        >
           <Check size={20} />
           ¡Estoy empastillada!
         </div>
       )}
       {error && (
-        <div className="bg-red-100 text-red-700 px-6 py-3 font-semibold">
+        <div className="px-6 py-3 font-semibold border-4" style={{ backgroundColor: '#fbe4e4', borderColor: OSCURO }}>
           Algo no ha ido bien — avisa a Álvaro
         </div>
       )}
 
       {racha > 0 && (
         <div className="relative w-24 h-24 flex items-center justify-center">
-          <Flame className="w-24 h-24 text-orange-500" fill="currentColor" strokeWidth={0} />
-          <span className="absolute text-white font-extrabold text-3xl mt-2">{racha}</span>
+          <Flame className="w-24 h-24" style={{ color: ORO }} fill={ORO} strokeWidth={0} />
+          <span className="absolute font-extrabold text-3xl mt-2" style={{ color: OSCURO }}>
+            {racha}
+          </span>
         </div>
       )}
 
