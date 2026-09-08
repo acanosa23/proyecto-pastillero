@@ -116,8 +116,8 @@ export default async function Home({ searchParams }) {
   return (
     <main className="min-h-screen flex flex-col items-center gap-3 p-4 bg-white" style={{ color: OSCURO }}>
       <LimpiarUrl />
-      <h1 className="text-3xl font-bold text-center mt-1">¿Me he empastillado hoy?</h1>
-      <p className="text-sm capitalize -mt-2">{nombreDiaLargo(hoyStr)}</p>
+      <h1 className="text-3xl font-extrabold uppercase tracking-wide text-center mt-1">NO MÁS COSÍN</h1>
+      <p className="text-sm -mt-2">{nombreDiaLargo(hoyStr)}</p>
 
       {registrado && (
         <div className="flex items-center gap-2 font-bold px-4 py-2 text-sm" style={{ backgroundColor: TEAL, color: '#fff' }}>

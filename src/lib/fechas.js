@@ -65,10 +65,11 @@ export function nombreDiaCorto(fechaStr) {
 export function nombreDiaLargo(fechaStr) {
   const [y, m, d] = fechaStr.split('-').map(Number);
   const fecha = new Date(Date.UTC(y, m - 1, d));
-  return new Intl.DateTimeFormat('es-ES', {
+  const texto = new Intl.DateTimeFormat('es-ES', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     timeZone: 'UTC',
   }).format(fecha);
+  return texto.charAt(0).toUpperCase() + texto.slice(1);
 }
