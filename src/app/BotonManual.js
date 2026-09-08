@@ -6,9 +6,8 @@ import { Orbitron } from 'next/font/google';
 
 const orbitron = Orbitron({ subsets: ['latin'], weight: ['700'] });
 
-const OSCURO = '#0E3529';
-const VERDE = '#4B8A6C';
-const ORO = '#B89B4A';
+const TEAL = '#4FB3AC';
+const ACENTO = '#F4502A';
 
 export default function BotonManual() {
   const [cargando, setCargando] = useState(false);
@@ -26,10 +25,7 @@ export default function BotonManual() {
 
   if (confirmado) {
     return (
-      <div
-        className="mt-2 max-w-xs font-bold px-6 py-4 text-center border-4"
-        style={{ backgroundColor: VERDE, borderColor: OSCURO, color: '#fff' }}
-      >
+      <div className="mt-1 max-w-xs font-bold px-5 py-3 text-center text-sm" style={{ backgroundColor: TEAL, color: '#fff' }}>
         ¡Estoy empastillada!
       </div>
     );
@@ -39,8 +35,8 @@ export default function BotonManual() {
     <button
       onClick={registrar}
       disabled={cargando}
-      className={`${orbitron.className} mt-2 max-w-xs px-6 py-4 text-xs border-4 active:scale-95 transition disabled:opacity-50 text-center`}
-      style={{ backgroundColor: ORO, borderColor: OSCURO, color: OSCURO, boxShadow: `4px 4px 0px ${OSCURO}` }}
+      className={`${orbitron.className} mt-1 max-w-xs px-5 py-3 text-[10px] active:scale-95 transition disabled:opacity-50 text-center`}
+      style={{ backgroundColor: ACENTO, color: '#fff' }}
     >
       {cargando
         ? 'REGISTRANDO...'
